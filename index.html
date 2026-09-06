@@ -1,0 +1,1944 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"> <!-- 🚀 MASTER FIX: 'light' ki jagah 'dark' kar diya -->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OS-CIT SET Mock Test | SUNARAM</title>
+<!-- Chart.js Library for Advanced Dashboard Graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- 🚀 NAYI LINE: localForage for Offline IndexedDB Database -->
+<script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+    <script src="database.js"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+  
+
+  /* ── LIGHT MODE TOKENS ── */
+  :root {
+    --navy: #0d1b2a; --navy2: #1b2d42; --accent: #f0a500; --accent2: #e07b00;
+    --blue: #1a6faf; --blue2: #0e4d7a; --green: #16a34a; --green-light: #dcfce7;
+    --red: #dc2626; --red-light: #fee2e2; --text: #1e293b; --muted: #64748b;
+    --border: #cbd5e1; --card: #ffffff; --bg: #f1f5f9; --header: #0d1b2a;
+    --option-bg: #fafbfc; --option-hover: #eff6ff; --exp-bg: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  }
+
+  /* ── DARK MODE TOKENS ── */
+  [data-theme="dark"] {
+    --navy: #1e293b; --navy2: #0f172a; --accent: #f59e0b; --accent2: #d97706;
+    --blue: #3b82f6; --blue2: #60a5fa; --green: #22c55e; --green-light: #064e3b;
+    --red: #ef4444; --red-light: #7f1d1d; --text: #f8fafc; --muted: #94a3b8;
+    --border: #334155; --card: #0f172a; --bg: #020617; --header: #020617;
+    --option-bg: #1e293b; --option-hover: #334155; --exp-bg: linear-gradient(135deg, #1e293b, #0f172a);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+
+  /* ── HEADER ── */
+  header { background: var(--header); color: #fff; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.35); }
+  .header-logo { font-family: 'Rajdhani', sans-serif; font-size: 1.35rem; font-weight: 700; letter-spacing: 2px; color: var(--accent); }
+  .header-logo span { color: #fff; }
+  .header-controls { display: flex; align-items: center; gap: 15px; }
+  .theme-toggle-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 6px; font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+  .theme-toggle-btn:hover { background: rgba(240,165,0,0.15); }
+  .header-timer { display: flex; align-items: center; gap: 8px; background: rgba(240,165,0,0.15); border: 1px solid rgba(240,165,0,0.4); border-radius: 6px; padding: 4px 12px; font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout { display: flex; flex: 1; max-width: 1400px; margin: 0 auto; width: 100%; padding: 30px 24px 80px; gap: 40px; }
+
+  /* ── SIDEBAR PANEL ── */
+/* ── SIDEBAR PANEL (INDEPENDENT SCROLL FIX) ── */
+  .scoreboard { 
+    width: 290px; /* Thoda space badhaya taaki content dabay nahi */
+    flex-shrink: 0; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 16px; 
+    position: sticky; 
+    top: 80px; 
+    height: calc(100vh - 90px); /* Screen ki height ke hisaab se fix kiya */
+    overflow-y: auto; 
+    overflow-x: hidden;
+    padding-right: 8px; /* Scrollbar ke liye jagah */
+    padding-bottom: 20px; /* Niche thodi jagah chhodi */
+  }
+
+  /* 🛡️ SAFETY LOCK: Andar ke boxes ko squish/dichakne se rokna */
+  .scoreboard > div {
+    flex-shrink: 0; 
+  }
+  
+  /* Sundar Custom Scrollbar */
+  .scoreboard::-webkit-scrollbar { width: 6px; }
+  .scoreboard::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  
+  /* Sidebar ko sundar patla scrollbar dene ke liye */
+  .scoreboard::-webkit-scrollbar { width: 5px; }
+  .scoreboard::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }  .panel-card { background: var(--card); border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.07); border: 1px solid var(--border); display: flex; flex-direction: column; }
+  .panel-header { background: var(--navy); color: #fff; padding: 12px 16px; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; letter-spacing: 1.2px; font-weight: 700; text-transform: uppercase; text-align: center; }
+  
+  /* ── CHAPTERS SECTION ── */
+  .chapters-list { display: flex; flex-direction: column; gap: 8px; padding: 14px; max-height: 250px; overflow-y: auto; }
+  .chapter-btn { background: var(--bg); border: 1.5px solid var(--border); border-radius: 6px; padding: 10px 14px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text); text-align: left; cursor: pointer; transition: all 0.2s; }
+  .chapter-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--option-hover); }
+  .chapter-btn.active { border-color: var(--blue); background: var(--blue); color: #fff; }
+  .mixed-btn { background: linear-gradient(135deg, #dc2626, #b91c1c); color: #fff; border: none; border-radius: 6px; padding: 12px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; margin-top: 6px; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.2); }
+  .mixed-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(220, 38, 38, 0.4); }
+
+  /* ── LIVE SCORE ── */
+  .score-table { width: 100%; border-collapse: collapse; }
+  .score-table tr { border-bottom: 1px solid var(--border); }
+  .score-table tr:last-child { border-bottom: none; }
+  .score-table td { padding: 10px 16px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+  .score-table td:last-child { text-align: right; }
+  .badge { display: inline-block; min-width: 28px; padding: 2px 7px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-align: center; }
+  .badge-total   { background: var(--border); color: var(--text); }
+  .badge-attempted { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+  .badge-correct { background: var(--green-light); color: var(--green); }
+  .badge-incorrect { background: var(--red-light); color: var(--red); }
+  .badge-remaining { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+  .progress-wrap { padding: 12px 16px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar-bg { height: 8px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--accent)); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* ── QUESTION NAVIGATOR ── */
+  .qnav-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; padding: 14px; max-height: 220px; overflow-y: auto; }
+  .qnav-btn { width: 100%; aspect-ratio: 1; border: 1.5px solid var(--border); border-radius: 6px; background: var(--card); cursor: pointer; font-size: 0.75rem; font-weight: 700; color: var(--text); transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+  .qnav-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .qnav-btn.current { border-color: var(--blue); background: var(--blue); color: #fff; transform: scale(1.05); }
+  .qnav-btn.correct { border-color: var(--green); background: var(--green-light); color: var(--green); }
+  .qnav-btn.incorrect { border-color: var(--red); background: var(--red-light); color: var(--red); }
+  .legend { display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+  /* ── QUESTION AREA ── */
+  .question-area { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+  .exam-bar { background: var(--card); border-radius: 10px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .exam-bar-title { font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+  .exam-bar-meta { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+  .q-category { display: inline-flex; align-items: center; gap: 5px; background: rgba(26, 111, 175, 0.1); border: 1px solid rgba(26, 111, 175, 0.3); color: var(--blue); font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+  .question-card { background: var(--card); border-radius: 14px; padding: 32px; border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(0,0,0,0.07); flex: 1; }
+  .q-top { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  .q-number { background: var(--navy); color: var(--accent); font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700; padding: 6px 12px; border-radius: 8px; white-space: nowrap; flex-shrink: 0; margin-top: 2px; }
+  .q-text { font-size: 1.15rem; font-weight: 600; line-height: 1.6; color: var(--text); }
+  .q-hindi { font-size: 0.95rem; color: var(--muted); margin-top: 6px; font-weight: 500; }
+
+  /* Options */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px; }
+  .option-btn { display: flex; align-items: center; gap: 14px; padding: 14px 20px; border-radius: 10px; border: 2px solid var(--border); background: var(--option-bg); cursor: pointer; text-align: left; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 600; color: var(--text); transition: all 0.18s; position: relative; overflow: hidden; }
+  .option-btn:hover:not(:disabled) { border-color: var(--blue); background: var(--option-hover); color: var(--blue); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(26,111,175,0.12); }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-key { width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.18s; }
+  .option-btn:hover:not(:disabled) .option-key { background: var(--blue); }
+
+  .option-btn.correct-opt { border-color: var(--green); background: var(--green-light); color: var(--green); animation: popIn 0.3s ease; }
+  .option-btn.correct-opt .option-key { background: var(--green); }
+  .option-btn.incorrect-opt { border-color: var(--red); background: var(--red-light); color: var(--red); animation: shake 0.35s ease; }
+  .option-btn.incorrect-opt .option-key { background: var(--red); }
+  .result-icon { margin-left: auto; font-size: 1.2rem; font-weight: 700; flex-shrink: 0; }
+  .explanation-box { margin-top: 24px; background: var(--exp-bg); border: 1px solid var(--blue); border-radius: 10px; padding: 16px 20px; font-size: 0.9rem; color: var(--text); line-height: 1.6; display: none; animation: fadeIn 0.3s ease; }
+  .explanation-box.show { display: block; }
+  .explanation-box.exp-correct { border-color: var(--green); background: var(--green-light); }
+  .explanation-box.exp-incorrect { border-color: var(--red); background: var(--red-light); }
+  .explanation-box strong { font-weight: 700; color: var(--accent); font-size: 1rem; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { 0% { transform: scale(0.96); } 60% { transform: scale(1.02); } 100% { transform: scale(1); } }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 20%,60% { transform: translateX(-5px); } 40%,80% { transform: translateX(5px); } }
+
+  /* ── NAVIGATION ── */
+  .nav-bar { background: var(--card); border-radius: 12px; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .nav-btn { display: flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 8px; border: 2px solid var(--navy); background: var(--navy); color: #fff; font-family: 'Nunito', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: all 0.18s; letter-spacing: 0.5px; }
+  .nav-btn:hover:not(:disabled) { background: var(--blue2); border-color: var(--blue2); transform: translateY(-1px); }
+  .nav-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+  .nav-btn.primary { background: var(--accent); border-color: var(--accent); color: #1a1a1a; }
+  .nav-btn.primary:hover:not(:disabled) { background: var(--accent2); border-color: var(--accent2); }
+  .q-counter-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 8px 20px; font-size: 0.9rem; font-weight: 700; color: var(--muted); font-family: 'Rajdhani', sans-serif; letter-spacing: 0.5px; }
+
+  /* ── RESULTS SCREEN ── */
+  .results-screen { display: none; background: var(--card); border-radius: 16px; padding: 40px; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(0,0,0,0.09); flex: 1; animation: fadeIn 0.5s ease; }
+  .results-screen.show { display: block; }
+  .results-top { display: flex; flex-direction: column; align-items: center; gap: 24px; text-align: center; }
+  .result-score-circle { width: 150px; height: 150px; border-radius: 50%; background: conic-gradient(var(--green) calc(var(--pct) * 3.6deg), var(--border) 0deg); display: flex; align-items: center; justify-content: center; position: relative; transition: background 0.1s linear; }
+  .result-score-inner { width: 120px; height: 120px; border-radius: 50%; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .result-pct { font-family: 'Rajdhani', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--green); line-height: 1; }
+  .result-pct-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+  .result-title { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; font-weight: 700; color: var(--text); }
+  .result-stats { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
+  .result-stat { background: var(--bg); border-radius: 10px; padding: 16px 26px; text-align: center; border: 1px solid var(--border); min-width: 110px; }
+  .result-stat-num { font-family: 'Rajdhani', sans-serif; font-size: 1.8rem; font-weight: 700; }
+  .result-stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+  .results-actions { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 30px; }
+  .btn-outline { background: transparent; color: var(--red); border: 2px solid var(--red); font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; font-weight: 700; padding: 12px 28px; border-radius: 9px; cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px; }
+  .btn-outline:hover { background: var(--red-light); transform: translateY(-2px); }
+  
+  .section-title { font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 700; margin: 40px 0 15px; color: var(--text); text-align: left; }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; text-align: left; }
+  thead { background: var(--bg); }
+  th { padding: 16px; font-weight: 700; color: var(--muted); border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.8rem; }
+  td { padding: 16px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; color: var(--text); }
+  tr:last-child td { border-bottom: none; }
+  .status-badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+  .badge-correct { background: var(--green-light); color: var(--green); }
+  .badge-wrong   { background: var(--red-light); color: var(--red); }
+  .badge-skipped { background: var(--border); color: var(--text); }
+
+/* ── DASHBOARD STYLES (Scroll Fix & Spacing) ── */
+  #dashboard-container {
+    width: 100%;
+    max-width: 1400px; /* Screen ke hisaab se perfect width */
+    margin: 0 auto;
+    box-sizing: border-box; /* Padding ki wajah se screen bahar nahi jayegi */
+    animation: fadeIn 0.6s ease;
+  }
+  
+  .dashboard-header {
+    text-align: center;
+    margin-bottom: 55px; /* 🌟 Text aur cards ke beech space badhaya */
+  }
+
+  .dash-grid {
+    display: grid;
+    /* 🌟 MAGIC LOCK: minmax(0, 1fr) lagane se cards screen se bahar nahi jayenge 🌟 */
+    grid-template-columns: repeat(4, minmax(0, 1fr)); 
+    gap: 20px;
+    width: 100%;
+    padding-top: 10px; /* 🌟 Hover karne par jump ke liye safe zone */
+  }
+
+  /* 🛡️ SAFETY LOCK: Chhoti screens ke liye */
+  @media (max-width: 1200px) {
+    .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 768px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+  .dash-card {
+    background: var(--card); /* Yeh automatic dark/light hoga */
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+  .dash-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: var(--blue);
+  }
+  .dash-card h3 {
+    color: var(--text); /* Text automatic white/black hoga */
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px dashed var(--border);
+  }
+  .chart-wrapper {
+    position: relative;
+    height: 280px;
+    width: 100%;
+  }
+  .start-test-btn {
+    background: linear-gradient(135deg, var(--blue), var(--blue2));
+    color: #fff;
+    border: none;
+    padding: 16px 45px;
+    font-size: 1.25rem;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(26, 111, 175, 0.4);
+    transition: all 0.3s ease;
+    letter-spacing: 1px;
+  }
+  .start-test-btn:hover {
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(26, 111, 175, 0.6);
+  }
+  @media (max-width: 768px) {
+    .dash-grid { grid-template-columns: 1fr; }
+  }
+/* 🎬 RIGHT SIDE PROFESSIONAL LIST REVEAL */
+@keyframes rightTextReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+  /* ── RESPONSIVE ── */
+  @media (max-width: 950px) {
+    .main-layout { flex-direction: column; padding: 16px 12px 80px; gap: 24px; }
+    .question-area { order: -1; width: 100%; }
+    .scoreboard { width: 100%; position: static; order: 2; display: flex; flex-direction: row; flex-wrap: wrap; gap: 16px; }
+    .panel-card { flex: 1; min-width: 280px; }
+  }
+  @media (max-width: 680px) { .options-grid { grid-template-columns: 1fr; } }
+
+  /* ══════════════════════════════════════════
+   🔍 STAGE 5: THE ZOOM MODAL (CSS)
+══════════════════════════════════════════ */
+.zoom-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* Background ko dark karna */
+  backdrop-filter: blur(5px); /* Premium iPhone jaisa blur effect */
+  z-index: 9999; /* Sabse upar rakhne ke liye */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Chhupane ka animation logic */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Jab modal open hoga tab yeh class add hogi */
+.zoom-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.zoom-modal-content {
+  background: var(--card);
+  width: 90%;
+  max-width: 1000px; /* Bada sa canvas */
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  position: relative;
+  border: 1px solid var(--border);
+  
+  /* Zoom/Bounce animation logic */
+  transform: scale(0.7);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.zoom-overlay.active .zoom-modal-content {
+  transform: scale(1); /* Poora bada ho jayega */
+}
+
+.zoom-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: var(--red-light);
+  color: var(--red);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.zoom-close-btn:hover {
+  background: var(--red);
+  color: white;
+  transform: rotate(90deg); /* Close button par ghoomne wala effect */
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">OS-CIT<span> COMPUTER AWARENESS</span></div>
+  <div class="header-controls">
+    <div class="header-timer" id="timerDisplay">⏱ 00:00</div>
+    <!-- 🚀 MASTER FIX: Button ka default text update kar diya -->
+    <button id="themeToggle" class="theme-toggle-btn" onclick="toggleTheme()">☀️ Light</button>
+  </div>
+</header>
+
+<!-- 🌟 NAYA DASHBOARD CONTAINER (Yeh test se pehle dikhega) 🌟 -->
+<div id="dashboard-container" style="padding: 20px;">
+  <!-- (Agle step mein hum yahan apne 4 Cards aur Start Button lagayenge) -->
+
+<!-- DASHBOARD HEADER -->
+<div class="dashboard-header">
+  <h1 style="color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; margin-bottom: 5px;">Smart Study: Pre-Test Analysis 🎯</h1>
+  <p style="color: var(--muted); font-size: 1.1rem; font-weight: 600; margin-bottom: 20px;">Based on Previous Years' Papers</p>
+  
+  <!-- 🌟 NAYA FEATURE: Dashboard Year Filter (Remote Control) 🌟 -->
+  <select id="dashboardYearFilter" onchange="generateDashboardData()" style="padding: 10px 25px; border-radius: 8px; font-weight: bold; font-size: 15px; border: 2px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; outline: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); font-family: 'Nunito', sans-serif;">
+    <option value="All">📚 All Papers (Combined Analysis)</option>
+    <!-- Baaki years JavaScript automatically yahan daal dega -->
+  </select>
+</div>
+
+<!-- 4 CARDS GRID -->
+<div class="dash-grid">
+  
+  <!-- Card 1: Chapter Weightage (Bar Graph) -->
+  <div class="dash-card" onclick="openZoom('weightage')">
+    <h3 style="display:flex; align-items:center; gap:8px;">📊 Chapter Weightage</h3>
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas id="weightageChart"></canvas>
+    </div>
+  </div>
+
+<!-- Card 2: Important Chapters (VIP Custom Animated Layout) -->
+<!-- Card 2: Important Chapters (Top 5) -->
+  <div class="dash-card" onclick="openZoom('vip')">
+    <h3 style="display:flex; align-items:center; gap:8px;">📈 Important Chapters (Top 5)</h3>
+    
+    <!-- 🚀 MASTER FIX: 50-50 wala layout hata diya. Ab yeh 100% width lega Card 3 ki tarah -->
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas id="vipPieChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 3: Type-wise Analysis (Auto-Hide Feature) -->
+  <div class="dash-card" id="typeWiseCard" onclick="openZoom('type')">
+    <h3 style="display:flex; align-items:center; gap:8px;">🎯 Type-wise Analysis (Top Types)</h3>
+    <div style="position: relative; height: 250px; width: 100%;">
+      <canvas id="typePieChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Card 4: Chapter Distribution Table (Kiran Publication Style) -->
+<!-- Card 4: Chapter Distribution Table (Kiran Publication Style) -->
+  <div class="dash-card" style="grid-column: span 1;" onclick="openZoom('table')">
+    <h3 style="display:flex; align-items:center; gap:8px;">📋 Chapter Distribution Table</h3>
+    
+    <!-- 🚀 MASTER FIX: overflow: hidden lagaya, aur table-layout: fixed kiya taaki scrollbar na aaye -->
+    <div style="margin-top: 10px; height: 240px; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-family: 'Nunito', sans-serif; font-size: 0.85rem; table-layout: fixed;">
+        <thead>
+          <tr style="background: var(--primary); color: white; text-align: left;">
+            <!-- Columns ki width fix kardi taaki design bahar na nikle -->
+            <th style="padding: 8px; border-top-left-radius: 6px; width: 55%;">Chapter Name</th>
+            <th style="padding: 8px; text-align: center; width: 20%;">Qs</th>
+            <th style="padding: 8px; border-top-right-radius: 6px; text-align: center; width: 25%;">% Share</th>
+          </tr>
+        </thead>
+        <tbody id="distributionTableBody">
+          <!-- Data JavaScript se yahan inject hoga -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- START TEST BUTTON -->
+<div style="text-align: center; margin-top: 40px;">
+  <button class="start-test-btn" onclick="startMockTest()">Start Practice Test 🚀</button>
+</div>
+</div>
+<!-- 🌟 DASHBOARD CONTAINER KHATAM 🌟 -->
+
+<!-- 🌟 MOCK TEST CONTAINER (Yeh shuruwat mein chhupa rahega) 🌟 -->
+<div id="test-container" style="display: none;">
+
+<!-- Iske theek niche aapka purana <div class="main-layout"> shuru ho raha hoga -->
+<div class="main-layout">
+
+  <!-- SIDEBAR PANEL -->
+  <aside class="scoreboard">
+    
+<!-- PREVIOUS YEARS PAPER SELECTOR -->
+<div class="sidebar-box" style="margin-bottom: 15px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+  <div style="background-color: #000; color: #fff; padding: 12px; text-align: center; font-weight: bold; font-size: 14px; text-transform: uppercase;">
+    Previous Years Paper
+  </div>
+  
+  <select id="paperSelect" onchange="handlePaperChange(this.value)" style="width: 100%; padding: 10px; border: none; outline: none; font-size: 14px; text-align: center; cursor: pointer; background: #fff; color: #000; font-weight: bold; appearance: none; -webkit-appearance: none; border-bottom: 1px solid #ccc;">
+    <option value="All" disabled selected hidden>Select Papers ▼</option>
+  </select>
+  
+  <button onclick="mixAllPapers()" style="width: 100%; padding: 12px; background-color: #bb0f0f; color: #fff;  border: none; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #cc0000;">
+    Mixed All Papers 🎲
+  </button>
+
+ <!-- 🌟 UPGRADED AI YELLOW BUTTON: Repeated Questions Ke Liye -->
+<button onclick="window.findRepeatedQuestions()" style="width: 100%; padding: 12px; background-color: #ffd700; color: #000; border: none; font-weight: bold; font-size: 15px; border-radius: 6px; cursor: pointer; margin-top: 10px;">
+  🤖 AI Smart PYQs (Repeated)
+</button>
+</div>
+<!-- END PAPER SELECTOR -->
+
+<!-- Iske niche aapka purana Chapters wala box chalega... -->
+    <!-- 1. CHAPTERS PANEL -->
+    <div class="panel-card">
+      <div class="panel-header">📚 OS-CIT SET CHAPTER'S NAMES</div>
+      <div class="chapters-list" id="chaptersList">
+        <!-- Dynamically injected chapter buttons -->
+      </div>
+    </div>
+
+    <!-- 2. LIVE SCORE -->
+    <div class="panel-card">
+      <div class="panel-header">📊 Live Score</div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Progress</span><span id="progressPct">0%</span></div>
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+      <table class="score-table">
+        <tr><td>Total Questions</td><td><span class="badge badge-total" id="sTotal">0</span></td></tr>
+        <tr><td>Attempted</td><td><span class="badge badge-attempted" id="sAttempted">0</span></td></tr>
+        <tr><td>✔ Correct</td><td><span class="badge badge-correct" id="sCorrect">0</span></td></tr>
+        <tr><td>✘ Incorrect</td><td><span class="badge badge-incorrect" id="sIncorrect">0</span></td></tr>
+        <tr><td>Remaining</td><td><span class="badge badge-remaining" id="sRemaining">0</span></td></tr>
+      </table>
+    </div>
+
+    <!-- 3. QUESTION NAVIGATOR -->
+    <div class="panel-card">
+      <div class="panel-header">📋 Question Panel</div>
+      <div class="qnav-grid" id="qnavGrid"></div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div> Current</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--green-light);border:1px solid var(--green)"></div> Correct</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--red-light);border:1px solid var(--red)"></div> Incorrect</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--border)"></div> Not Visited</div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- QUESTION AREA -->
+  <main class="question-area">
+    <div class="exam-bar">
+      <div class="exam-bar-title" id="moduleTitle">OS-CIT Practice Test</div>
+      <div class="exam-bar-meta">SSC | Bank | UPSC | NDA | BPSC</div>
+    </div>
+
+    <div id="questionWrapper"></div>
+
+    <div class="nav-bar" id="navBar">
+      <button class="nav-btn" id="prevBtn" onclick="navigate(-1)" disabled>◀ Previous</button>
+      <div class="q-counter-pill" id="qCounterPill">Q 1 / 0</div>
+      <button class="nav-btn primary" id="nextBtn" onclick="navigate(1)">Next ▶</button>
+    </div>
+
+    <div class="results-screen" id="resultsScreen">
+      <div class="results-top">
+        <div class="result-title">🎉 Test Completed!</div>
+        <div class="result-score-circle" id="scoreCircle">
+          <div class="result-score-inner"><div class="result-pct" id="resultPct">0%</div><div class="result-pct-label">Score</div></div>
+        </div>
+        <div class="result-stats">
+          <div class="result-stat"><div class="result-stat-num" id="rTotal" style="color:var(--text)">0</div><div class="result-stat-label">Total</div></div>
+          <div class="result-stat"><div class="result-stat-num" id="rCorrect" style="color:var(--green)">0</div><div class="result-stat-label">Correct</div></div>
+          <div class="result-stat"><div class="result-stat-num" id="rIncorrect" style="color:var(--red)">0</div><div class="result-stat-label">Incorrect</div></div>
+          <div class="result-stat"><div class="result-stat-num" id="rSkipped" style="color:var(--accent)">0</div><div class="result-stat-label">Skipped</div></div>
+        </div>
+      </div>
+      <div class="results-actions">
+        <button class="btn-outline" onclick="exportWrongToExcel()">⬇ Download Incorrect Questions</button>
+        <button class="btn-outline" onclick="practiceIncorrect()">🔄 Practice Incorrect Questions</button>
+        <!-- <button class="restart-btn" onclick="restartTest()">↺ RESTART TEST</button> -->
+      </div>
+      <div class="section-title">Detailed Answer Review</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Category</th><th>Question</th><th>Your Answer</th><th>Correct Answer</th><th>Status</th></tr></thead>
+          <tbody id="results-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+</div> <!-- 🌟 YEH LINE TEST CONTAINER KO CLOSE KARNE KE LIYE HAI 🌟 -->
+<script>
+
+// 🚀 MASTER FIX 1: App start hote hi Chart ka default text color Theme ke hisaab se set kar do
+Chart.defaults.color = document.documentElement.getAttribute('data-theme') === 'dark' ? '#f8fafc' : '#1e293b';
+Chart.defaults.font.family = "'Nunito', sans-serif"; // Font ko bhi premium bana diya
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  
+  html.setAttribute('data-theme', newTheme);
+  document.getElementById('themeToggle').innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
+  
+  // 🚀 MASTER FIX 2: Jab bhi user theme button dabaye, Chart ka color turant update karo
+  Chart.defaults.color = newTheme === 'dark' ? '#f8fafc' : '#1e293b';
+  
+  // Agar dashboard khula hai, toh charts ko naye color mein turant redraw (refresh) kar do
+  if (document.getElementById('dashboard-container').style.display !== 'none') {
+    if (typeof generateDashboardData === 'function') {
+      generateDashboardData();
+    }
+  }
+}
+
+/* ══════════════════════════════════════════
+   🎨 CUSTOM CHART PLUGINS (Bugs se bachne ke liye sabse upar)
+══════════════════════════════════════════ */
+const barNumberPlugin = {
+  id: 'barNumberPlugin',
+  afterDatasetsDraw(chart, args, options) {
+    if (chart.config.type !== 'bar') return; 
+    const { ctx, data } = chart;
+    ctx.save();
+    ctx.font = 'bold 14px Nunito';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    ctx.fillStyle = isDark ? '#f8fafc' : '#1e293b'; 
+
+    chart.getDatasetMeta(0).data.forEach((bar, index) => {
+      const value = data.datasets[0].data[index];
+      ctx.fillText(value, bar.x, bar.y - 6);
+    });
+    ctx.restore();
+  }
+};
+
+const pieLabelPlugin = {
+  id: 'pieLabelPlugin',
+  afterDatasetsDraw(chart, args, options) {
+    if (chart.config.type !== 'pie' && chart.config.type !== 'doughnut') return;
+    const { ctx, data } = chart;
+    ctx.save();
+    ctx.font = 'bold 11px Nunito';
+    ctx.fillStyle = '#ffffff'; 
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.8)';
+    ctx.shadowBlur = 4;
+
+    const meta = chart.getDatasetMeta(0);
+    const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+
+    meta.data.forEach((element, index) => {
+      const value = data.datasets[0].data[index];
+      const pctValue = (value / total) * 100;
+      const percentage = Math.round(pctValue) + '%';
+      let label = data.labels[index] || "";
+      const shortLabel = label.split(':')[0]; 
+
+      if (pctValue > 5) {
+        const position = element.tooltipPosition(); 
+        ctx.fillText(shortLabel, position.x, position.y - 7); 
+        ctx.fillText(percentage, position.x, position.y + 7); 
+      }
+    });
+    ctx.restore();
+  }
+};
+
+/* ══════════════════════════════════════════
+   VIEW SWITCHER LOGIC (DASHBOARD TO TEST)
+══════════════════════════════════════════ */
+function startMockTest() {
+  isTestStarted = true; 
+  document.getElementById('dashboard-container').style.display = 'none';
+  document.getElementById('test-container').style.display = 'flex';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  initTest(); 
+}
+
+/* ══════════════════════════════════════════
+   STAGE 3: THE DATA MINER (DASHBOARD LOGIC)
+══════════════════════════════════════════ */
+function initDashboard() {
+  try {
+    if (typeof allQuestions === 'undefined' || allQuestions.length === 0) {
+      setTimeout(initDashboard, 500);
+      return;
+    }
+
+    const dashboardYearFilter = document.getElementById('dashboardYearFilter');
+    dashboardYearFilter.innerHTML = '<option value="All">📚 All Papers (Combined Analysis)</option>';
+    
+    const uniqueYears = [...new Set(allQuestions.map(q => q.paper || "No-Year"))] 
+                       .filter(y => y !== "No-Year")
+                        .sort((a,b) => b-a);
+    
+    uniqueYears.forEach(year => {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = `📅 ${year} Paper`;
+      dashboardYearFilter.appendChild(option);
+    });
+
+    const hasTypes = allQuestions.some(q => (q.type && typeof q.type === 'string') || (q.Type && typeof q.Type === 'string'));
+    const typeCard = document.getElementById('typeWiseCard');
+    const dashGrid = document.querySelector('.dash-grid');
+
+    if (hasTypes) {
+      typeCard.style.display = 'block';
+      dashGrid.style.gridTemplateColumns = 'repeat(4, minmax(0, 1fr))';
+    } else {
+      typeCard.style.display = 'none';
+      dashGrid.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
+    }
+
+    setTimeout(() => {
+      generateDashboardData();
+    }, 700);
+
+  } catch (error) {
+    console.error("❌ DASHBOARD ERROR:", error);
+  }
+}
+
+/* ══════════════════════════════════════════
+   🧮 DASHBOARD DATA CALCULATOR
+══════════════════════════════════════════ */
+function generateDashboardData() {
+  const selectedYear = document.getElementById('dashboardYearFilter').value;
+  let filteredQuestions = [];
+  
+  if (selectedYear === "All") {
+    filteredQuestions = allQuestions; 
+  } else {
+    filteredQuestions = allQuestions.filter(q => String(q.paper) === selectedYear);
+  }
+
+  const categoryCounts = {};
+  filteredQuestions.forEach(q => {
+    const catName = q.cat || "Miscellaneous"; 
+    categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
+  });
+  
+  const sortedChapters = Object.entries(categoryCounts)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+
+  const typeCounts = {};
+  const chapterTypeCounts = {}; 
+
+  filteredQuestions.forEach(q => {
+    const typeName = q.type || q.Type; 
+    const catName = q.cat || "Miscellaneous"; 
+
+    if (typeName && typeof typeName === 'string' && typeName.trim() !== "") {
+      if (typeCounts[typeName]) typeCounts[typeName] += 1;
+      else typeCounts[typeName] = 1;
+
+      if (!chapterTypeCounts[catName]) chapterTypeCounts[catName] = {};
+      chapterTypeCounts[catName][typeName] = (chapterTypeCounts[catName][typeName] || 0) + 1;
+    }
+  });
+
+  // 🚀 MASTER FIX: Saare Global Variables ab data calculate hone ke baad save honge!
+  window.fullCategoryData = sortedChapters;
+  window.chapterTypeCounts = chapterTypeCounts;
+  window.rawQuestions = filteredQuestions;
+
+  drawWeightageChart(categoryCounts);
+  drawVIPList(sortedChapters);
+  drawTypeAndDistribution(typeCounts, sortedChapters, filteredQuestions);
+}
+
+/* ══════════════════════════════════════════
+   🎨 DASHBOARD CHART DRAW FUNCTIONS
+══════════════════════════════════════════ */
+let weightageChartInstance = null;
+let vipChartInstance = null;
+let typeChartInstance = null;
+
+function drawWeightageChart(categoryCounts) {
+  const ctx = document.getElementById('weightageChart').getContext('2d');
+  if (weightageChartInstance !== null) weightageChartInstance.destroy(); 
+
+  const sortedData = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  const labels = sortedData.map(item => item[0]);
+  const data = sortedData.map(item => item[1]);
+  const totalQuestions = Object.values(categoryCounts).reduce((sum, val) => sum + val, 0);
+  const colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+
+  weightageChartInstance = new Chart(ctx, {
+    type: 'bar', 
+    data: {
+      labels: labels,
+      datasets: [{ label: 'Questions', data: data, backgroundColor: colors, borderRadius: 4 }]
+    },
+    plugins: [barNumberPlugin],
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let value = context.raw || 0;
+              let percentage = Math.round((value / totalQuestions) * 100) + "%";
+              return ` 🔥 ${value} Questions (${percentage})`; 
+            }
+          }
+        }
+      },
+      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { display: false } }
+    }
+  });
+}
+
+function drawVIPList(sortedChapters) {
+  const canvas = document.getElementById('vipPieChart');
+  if (!canvas) return; 
+  const ctx = canvas.getContext('2d');
+  if (vipChartInstance !== null) vipChartInstance.destroy(); 
+
+  const top5Chapters = sortedChapters.slice(0, 5);
+  const chartLabels = top5Chapters.map(c => c.name);
+  const chartData = top5Chapters.map(c => c.count);
+  const totalQuestions = sortedChapters.reduce((sum, c) => sum + c.count, 0);
+  const colors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b'];
+
+  vipChartInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: { labels: chartLabels, datasets: [{ data: chartData, backgroundColor: colors, borderWidth: 2, hoverOffset: 6 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' },
+      plugins: {
+        legend: { display: true, position: 'right', labels: { font: { family: "'Nunito', sans-serif", size: 11 }, boxWidth: 12 } },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              let val = context.raw || 0;
+              let pct = Math.round((val / totalQuestions) * 100) + "%";
+              return ` ${context.label}: ${val} Qs (${pct})`;
+            }
+          }
+        }
+      }
+    } 
+  });
+}
+
+function drawTypeAndDistribution(typeCounts, sortedChapters, filteredQuestions) {
+  const typeCtx = document.getElementById('typePieChart').getContext('2d');
+  if (typeChartInstance !== null) typeChartInstance.destroy();
+
+  const chapterTypeData = window.chapterTypeCounts || {};
+  const chapterTotals = [];
+  
+  for (const [chapter, typesObj] of Object.entries(chapterTypeData)) {
+    const totalQs = Object.values(typesObj).reduce((sum, val) => sum + val, 0);
+    chapterTotals.push({ name: chapter, count: totalQs });
+  }
+  
+  chapterTotals.sort((a, b) => b.count - a.count);
+  const top5ChaptersWithTypes = chapterTotals.slice(0, 5);
+  const typeLabels = top5ChaptersWithTypes.map(c => c.name);
+  const typeData = top5ChaptersWithTypes.map(c => c.count);
+  const totalTypesCount = chapterTotals.reduce((sum, c) => sum + c.count, 0);
+  const typeColors = ['#e74a3b', '#f6c23e', '#1cc88a', '#4e73df', '#36b9cc'];
+
+  if (typeLabels.length > 0) {
+    document.getElementById('typeWiseCard').style.display = 'block';
+    
+    typeChartInstance = new Chart(typeCtx, {
+      type: 'doughnut',
+      data: { labels: typeLabels, datasets: [{ data: typeData, backgroundColor: typeColors, borderWidth: 2, hoverOffset: 6 }] },
+      // 🚀 MASTER FIX: Yahan se 'plugins: [pieLabelPlugin]' HATA DIYA HAI taaki dashboard clean rahe
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'right', labels: { font: { family: "'Nunito', sans-serif", size: 11 }, boxWidth: 12 } },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                let val = context.raw || 0;
+                let pct = totalTypesCount > 0 ? Math.round((val / totalTypesCount) * 100) + "%" : "0%";
+                return ` ${context.label}: ${val} Qs (${pct})`;
+              }
+            }
+          }
+        }
+      }
+    });
+  } else {
+    document.getElementById('typeWiseCard').style.display = 'none';
+  }
+
+  const tableBody = document.getElementById('distributionTableBody');
+  tableBody.innerHTML = ''; 
+  const totalQuestions = sortedChapters.reduce((sum, c) => sum + c.count, 0);
+  const top5TableChapters = sortedChapters.slice(0, 5);
+
+  top5TableChapters.forEach((chapter, index) => {
+    const percentage = totalQuestions > 0 ? Math.round((chapter.count / totalQuestions) * 100) : 0;
+    const rowBg = index % 2 === 0 ? 'background: var(--bg);' : 'background: transparent;';
+    const rowHtml = `
+      <tr style="${rowBg} border-bottom: 1px solid var(--border);">
+        <td style="padding: 6px 8px; color: var(--text); font-weight: 600; font-size: 0.85rem;">${chapter.name}</td>
+        <td style="padding: 6px 8px; text-align: center; color: var(--primary); font-weight: 700; font-size: 0.9rem;">${chapter.count}</td>
+        <td style="padding: 6px 8px; text-align: center; color: var(--muted); font-size: 0.85rem;">${percentage}%</td>
+      </tr>
+    `;
+    tableBody.innerHTML += rowHtml;
+  });
+}
+
+
+/* ══════════════════════════════════════════
+   APP STATE & DYNAMIC FILTERING LOGIC
+══════════════════════════════════════════ */
+let activeQuestions = [];
+let currentQ = 0;
+let answers = [];
+let userChoices = [];
+let timerSec = 0;
+let timerInterval;
+let TOTAL = 0;
+let currentActiveCategory = "All"; 
+let currentPaperFilter = "All"; 
+let isTestStarted = false; 
+
+function setupApp() {
+  allQuestions.forEach((q, index) => {
+    if(!q.id) q.id = index + 1; 
+    if(q.cat) {
+      q.cat = q.cat.trim().split(' ').map(word => word.length > 0 ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase() : word).join(' ');
+    } else {
+      q.cat = "Mixed";
+    }
+    if(!q.paper) {
+      q.paper = "General Paper"; 
+    }
+  });
+  
+  buildPaperDropdown(); 
+  buildChaptersList(allQuestions); 
+  mixAllPapers(); 
+}
+
+function buildPaperDropdown() {
+  const uniquePapers = [...new Set(allQuestions.map(q => q.paper))].sort();
+  const select = document.getElementById('paperSelect');
+  select.innerHTML = '<option value="All" disabled selected hidden>Select Papers ▼</option>';
+  
+  uniquePapers.forEach(paper => {
+    const opt = document.createElement('option');
+    opt.value = paper;
+    opt.textContent = paper;
+    select.appendChild(opt);
+  });
+}
+
+/* ══════════════════════════════════════════
+   🤖 AI MODE TRACKERS & FILTER LOGIC
+══════════════════════════════════════════ */
+let isAIMode = false;
+let aiQuestionsList = [];
+
+function handlePaperChange(selectedPaper) {
+  isAIMode = false; // ❌ Normal mode mein wapas aaye
+  currentPaperFilter = selectedPaper;
+  let filteredByPaper = allQuestions.filter(q => q.paper === selectedPaper);
+  buildChaptersList(filteredByPaper); 
+  mixAllQuestions(); 
+}
+
+function mixAllPapers() {
+  isAIMode = false; // ❌ Normal mode mein wapas aaye
+  currentPaperFilter = "All";
+  document.getElementById('paperSelect').value = "All"; 
+  buildChaptersList(allQuestions); 
+  mixAllQuestions();
+}
+
+function buildChaptersList(questionsList) {
+  const uniqueCats = [...new Set(questionsList.map(q => q.cat))].sort();
+  const list = document.getElementById('chaptersList');
+  list.innerHTML = '';
+
+  uniqueCats.forEach((cat, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'chapter-btn';
+    btn.id = `btn-cat-${index}`;
+    btn.innerHTML = `<strong>${index + 1}.</strong> ${cat}`;
+    btn.onclick = () => filterByCategory(cat, btn.id);
+    list.appendChild(btn);
+  });
+
+  const mixBtn = document.createElement('button');
+  mixBtn.className = 'mixed-btn';
+  mixBtn.id = 'btn-cat-mixed';
+  
+  if (currentPaperFilter === "All") {
+    mixBtn.innerHTML = `🎲 Mixed (All Papers)`;
+  } else {
+    mixBtn.innerHTML = `🎲 Mixed (${currentPaperFilter})`;
+  }
+  
+  mixBtn.onclick = () => mixAllQuestions();
+  list.appendChild(mixBtn);
+}
+
+function highlightActiveChapter(activeId) {
+  const allBtns = document.querySelectorAll('.chapter-btn');
+  allBtns.forEach(btn => {
+    btn.classList.remove('active');
+    // AI Mode ke hisaab se border lagana ya hatana
+    btn.style.borderColor = isAIMode ? '#ffd700' : ''; 
+  });
+  
+  const mixBtn = document.getElementById('btn-cat-mixed');
+  if(mixBtn) {
+      mixBtn.style.border = isAIMode ? '2px solid #ffd700' : 'none';
+      mixBtn.style.boxShadow = isAIMode ? '0 0 10px rgba(255, 215, 0, 0.5)' : '';
+  }
+
+  if(activeId && activeId !== 'btn-cat-mixed') {
+    const activeBtn = document.getElementById(activeId);
+    if(activeBtn) activeBtn.classList.add('active');
+  }
+}
+
+function filterByCategory(catName, btnId) {
+  currentActiveCategory = catName;
+  // 👇 Agar AI mode ON hai, toh sirf AI questions use karo, warna normal questions
+  let dataSource = isAIMode ? aiQuestionsList : allQuestions;
+  
+  if (currentPaperFilter === "All") {
+    activeQuestions = dataSource.filter(q => String(q.cat).toLowerCase().trim() === String(catName).toLowerCase().trim());
+    document.getElementById('moduleTitle').textContent = isAIMode ? `🤖 AI Smart PYQs: ${catName}` : `${catName} - Practice Test`;
+  } else {
+    activeQuestions = dataSource.filter(q => 
+      String(q.cat).toLowerCase().trim() === String(catName).toLowerCase().trim() && 
+      String(q.paper).toLowerCase().trim() === String(currentPaperFilter).toLowerCase().trim()
+    );
+    document.getElementById('moduleTitle').textContent = isAIMode ? `🤖 AI Smart PYQs: ${catName}` : `${currentPaperFilter} : ${catName} - Practice Test`;
+  }
+  highlightActiveChapter(btnId);
+  initTest();
+}
+
+function mixAllQuestions() {
+  currentActiveCategory = "All";
+  // 👇 Agar AI mode ON hai, toh sirf AI questions use karo
+  let dataSource = isAIMode ? aiQuestionsList : allQuestions;
+  
+  if (currentPaperFilter === "All") {
+    activeQuestions = [...dataSource];
+    document.getElementById('moduleTitle').textContent = isAIMode ? `🤖 AI Smart PYQs - Mega Practice Test` : `Mixed All Papers - Mega Practice Test`;
+  } else {
+    activeQuestions = dataSource.filter(q => String(q.paper).toLowerCase().trim() === String(currentPaperFilter).toLowerCase().trim());
+    document.getElementById('moduleTitle').textContent = isAIMode ? `🤖 AI Smart PYQs: ${currentPaperFilter}` : `${currentPaperFilter} : Mixed Subjects`;
+  }
+  activeQuestions.sort(() => Math.random() - 0.5);
+  highlightActiveChapter(null);
+  initTest();
+}
+
+// 🤖 AI TAKE OVER BRIDGE FUNCTION (UPDATED)
+window.startAITest = function(aiQuestions) {
+  isAIMode = true; // ✅ AI Mode ON kar diya
+  aiQuestionsList = aiQuestions;
+  
+  // Sirf unhi chapters ke button banenge jinme AI ko repeated questions mile hain
+  buildChaptersList(aiQuestions);
+  
+  // Test ko start kar do
+  mixAllQuestions();
+  
+  const mixBtn = document.getElementById('btn-cat-mixed');
+  if(mixBtn) {
+      mixBtn.innerHTML = `🤖 Mixed (AI Mode)`;
+  }
+
+  // 4. Test shuru karo
+
+}
+
+/* ══════════════════════════════════════════
+   TEST INITIALIZATION & LOGIC
+══════════════════════════════════════════ */
+function initTest() {
+  TOTAL = activeQuestions.length;
+  answers = new Array(TOTAL).fill(null);
+  userChoices = new Array(TOTAL).fill(null);
+  currentQ = 0;
+  
+  timerSec = 0;
+  clearInterval(timerInterval);
+  document.getElementById('timerDisplay').textContent = `⏱ 00:00`; 
+
+  if (isTestStarted === true) {
+    timerInterval = setInterval(() => {
+      timerSec++;
+      const m = String(Math.floor(timerSec/60)).padStart(2,'0');
+      const s = String(timerSec%60).padStart(2,'0');
+      document.getElementById('timerDisplay').textContent = `⏱ ${m}:${s}`;
+    }, 1000);
+  }
+
+  document.getElementById('scoreCircle').style.setProperty('--pct', 0);
+  document.getElementById('resultPct').textContent = '0%';
+  document.getElementById('resultsScreen').classList.remove('show');
+  document.getElementById('questionWrapper').style.display = '';
+  document.getElementById('navBar').style.display = 'flex';
+
+  buildQNav();
+  renderQuestion();
+  updateScoreboard();
+}
+
+function renderQuestion() {
+  if(TOTAL === 0) {
+    document.getElementById('questionWrapper').innerHTML = `<h3 style="text-align:center; margin: 40px 0;">No questions available.</h3>`;
+    return;
+  }
+
+  const q = activeQuestions[currentQ];
+  const attempted = answers[currentQ] !== null;
+  const userChoice = userChoices[currentQ];
+  const optLetters = ['A','B','C','D'];
+  
+  let optsHTML = '';
+  q.opts.forEach((opt, i) => {
+    let cls = 'option-btn';
+    let icon = '';
+    if (attempted) {
+      if (i === q.ans) { cls += ' correct-opt'; icon = '<span class="result-icon">✔</span>'; }
+      else if (i === userChoice && userChoice !== q.ans) { cls += ' incorrect-opt'; icon = '<span class="result-icon">✘</span>'; }
+    }
+    optsHTML += `
+      <button class="${cls}" onclick="selectAnswer(${i})" ${attempted ? 'disabled' : ''}>
+        <span class="option-key">${optLetters[i]}</span>
+        <span>${opt}</span>
+        ${icon}
+      </button>`;
+  });
+
+  let expDisplay = '';
+  let noteBorderColor = 'var(--blue)'; 
+  
+  if (attempted) {
+    if (answers[currentQ] === 'correct') {
+      expDisplay = 'show exp-correct'; 
+      noteBorderColor = 'var(--green)'; 
+    } else if (answers[currentQ] === 'incorrect') {
+      expDisplay = 'show exp-incorrect'; 
+      noteBorderColor = 'var(--red)'; 
+    }
+  }
+
+  let pyqBadge = '';
+  if (q.yearsAppeared && q.yearsAppeared.length > 0) {
+    if (q.yearsAppeared.length > 1) {
+      pyqBadge = `<span style="background-color: #ffd700; color: #000; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-left: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">🔥 Repeated PYQ: ${q.yearsAppeared.join(', ')}</span>`;
+    } else {
+      pyqBadge = `<span style="background-color: #3b82f6; color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; margin-left: 10px;">📅 PYQ: ${q.yearsAppeared[0]}</span>`;
+    }
+  }
+
+  const html = `
+    <div class="question-card">
+      <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;">
+        <span class="q-category">${q.cat}</span>
+        ${pyqBadge} 
+      </div>
+      <div class="q-top">
+        <div class="q-number">Q ${currentQ+1}</div>
+        <div>
+          <div class="q-text">${q.q}</div>
+          ${q.h ? `<div class="q-hindi">${q.h}</div>` : ''}
+          
+          <img 
+            src="images/${q.id}.jpg" 
+            alt="Question Image" 
+            style="max-width: 100%; max-height: 250px; border-radius: 8px; margin-top: 15px; display: block;" 
+            onerror="if(!this.dataset.triedPng){ this.dataset.triedPng='true'; this.src='images/${q.id}.png'; } else { this.style.display='none'; }" 
+          />
+        </div>
+      </div>
+      <div class="options-grid">${optsHTML}</div>
+      <div class="explanation-box ${expDisplay}">
+        💡 <strong>Explanation:</strong> ${q.exp}
+        ${q.note ? `<div style="margin-top: 12px; padding-top: 12px; border-top: 1px dashed ${noteBorderColor};">📝 <strong>Short Notes:</strong> ${q.note}</div>` : ''}
+      </div>
+    </div>`;
+
+  document.getElementById('questionWrapper').innerHTML = html;
+  document.getElementById('prevBtn').disabled = currentQ === 0;
+  document.getElementById('nextBtn').disabled = false;
+  document.getElementById('qCounterPill').textContent = `Q ${currentQ+1} / ${TOTAL}`;
+  
+  if (currentQ === TOTAL - 1) {
+    document.getElementById('nextBtn').textContent = 'Submit Test ✓';
+    document.getElementById('nextBtn').classList.add('primary');
+  } else {
+    document.getElementById('nextBtn').textContent = 'Next ▶';
+    document.getElementById('nextBtn').classList.remove('primary');
+  }
+  updateQNav();
+}
+
+function selectAnswer(i) {
+  if (answers[currentQ] !== null) return;
+  userChoices[currentQ] = i;
+  answers[currentQ] = (i === activeQuestions[currentQ].ans) ? 'correct' : 'incorrect';
+  updateScoreboard();
+  renderQuestion();
+}
+
+function navigate(dir) {
+  if (dir === 1 && currentQ === TOTAL - 1) { showResults(); return; }
+  currentQ = Math.max(0, Math.min(TOTAL - 1, currentQ + dir));
+  renderQuestion();
+}
+function goToQuestion(idx) { currentQ = idx; renderQuestion(); }
+
+function updateScoreboard() {
+  const attempted = answers.filter(a => a !== null).length;
+  const correct = answers.filter(a => a === 'correct').length;
+  const incorrect = answers.filter(a => a === 'incorrect').length;
+  const remaining = TOTAL - attempted;
+  const pct = Math.round((attempted / TOTAL) * 100) || 0;
+
+  document.getElementById('sTotal').textContent = TOTAL;
+  document.getElementById('sAttempted').textContent = attempted;
+  document.getElementById('sCorrect').textContent = correct;
+  document.getElementById('sIncorrect').textContent = incorrect;
+  document.getElementById('sRemaining').textContent = remaining;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+function buildQNav() {
+  const grid = document.getElementById('qnavGrid');
+  grid.innerHTML = '';
+  for (let i = 0; i < TOTAL; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'qnav-btn';
+    btn.textContent = i + 1;
+    btn.onclick = () => goToQuestion(i);
+    btn.id = `qnav-${i}`;
+    grid.appendChild(btn);
+  }
+}
+function updateQNav() {
+  for (let i = 0; i < TOTAL; i++) {
+    const btn = document.getElementById(`qnav-${i}`);
+    if (!btn) continue;
+    btn.className = 'qnav-btn';
+    if (i === currentQ) btn.classList.add('current');
+    else if (answers[i] === 'correct') btn.classList.add('correct');
+    else if (answers[i] === 'incorrect') btn.classList.add('incorrect');
+  }
+}
+
+/* ══════════════════════════════════════════
+   RESULTS & EXPORT
+══════════════════════════════════════════ */
+function showResults() {
+  clearInterval(timerInterval);
+  const correct = answers.filter(a => a === 'correct').length;
+  const incorrect = answers.filter(a => a === 'incorrect').length;
+  const skipped = answers.filter(a => a === null).length;
+  const finalPct = Math.round((correct / TOTAL) * 100) || 0;
+
+  document.getElementById('questionWrapper').style.display = 'none';
+  document.getElementById('navBar').style.display = 'none';
+
+  const rs = document.getElementById('resultsScreen');
+  rs.classList.add('show');
+  
+  document.getElementById('rTotal').textContent = TOTAL;
+  document.getElementById('rCorrect').textContent = correct;
+  document.getElementById('rIncorrect').textContent = incorrect;
+  document.getElementById('rSkipped').textContent = skipped;
+
+  let grade = finalPct >= 80 ? '🏆 Excellent!' : finalPct >= 60 ? '👍 Good Performance!' : finalPct >= 40 ? '📚 Needs Improvement' : '💪 Keep Practicing!';
+  rs.querySelector('.result-title').textContent = grade;
+
+  const tbody = document.getElementById('results-tbody');
+  tbody.innerHTML = '';
+  activeQuestions.forEach((q, i) => {
+    const status = answers[i];
+    const userAns = status === null ? '—' : q.opts[userChoices[i]];
+    const correctAns = q.opts[q.ans];
+    
+    let badge = status === null ? `<span class="status-badge badge-skipped">— Skipped</span>` : 
+                status === 'correct' ? `<span class="status-badge badge-correct">✓ Correct</span>` : 
+                `<span class="status-badge badge-wrong">✗ Wrong</span>`;
+    
+    let userColor = status === null ? 'var(--muted)' : status === 'correct' ? 'var(--green)' : 'var(--red)';
+    
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td><span style="font-weight:700;color:var(--blue);font-size:0.75rem">${q.cat}</span></td>
+      <td>${q.q}</td>
+      <td style="color:${userColor}; font-weight:600">${userAns}</td>
+      <td style="color:var(--green); font-weight:600">${correctAns}</td>
+      <td>${badge}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  let currentPct = 0;
+  const stepTime = 20; 
+  const duration = 1200; 
+  const steps = duration / stepTime;
+  const increment = finalPct / steps;
+
+  if (finalPct === 0) {
+    document.getElementById('scoreCircle').style.setProperty('--pct', 0);
+    document.getElementById('resultPct').textContent = '0%';
+    return;
+  }
+
+  const animationTimer = setInterval(() => {
+    currentPct += increment;
+    if (currentPct >= finalPct) {
+      currentPct = finalPct;
+      clearInterval(animationTimer);
+    }
+    document.getElementById('scoreCircle').style.setProperty('--pct', currentPct);
+    document.getElementById('resultPct').textContent = Math.round(currentPct) + '%';
+  }, stepTime);
+}
+
+function exportWrongToExcel() {
+  const wrongQuestions = activeQuestions.filter((q, i) => answers[i] === 'incorrect');
+  
+  if (wrongQuestions.length === 0) {
+    alert('🎉 Congratulations! You have no wrong answers to export.');
+    return;
+  }
+
+  const escape = str => `"${String(str).replace(/"/g, '""')}"`;
+  const headers = ['Category', 'Question', 'Your Answer', 'Correct Answer', 'Explanation'];
+  
+  const rows = wrongQuestions.map(q => {
+    const activeIndex = activeQuestions.indexOf(q);
+    const userAns = q.opts[userChoices[activeIndex]];
+    const correctAns = q.opts[q.ans];
+    return [q.cat, q.q, userAns, correctAns, q.exp].map(escape);
+  });
+
+  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Wrong_Answers_${currentActiveCategory}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function practiceIncorrect() {
+  const incorrectQuestions = activeQuestions.filter((q, i) => answers[i] === 'incorrect');
+  if (incorrectQuestions.length === 0) {
+    alert('🎉 Badhai ho! Aapka ek bhi question galat nahi hai.');
+    return;
+  }
+  activeQuestions = incorrectQuestions;
+  document.getElementById('moduleTitle').textContent = `Revision: Incorrect Questions`;
+  initTest();
+}
+
+/* ══════════════════════════════════════════
+   🚀 STAGE 1 TEST: THE OFFLINE VAULT (IndexedDB)
+══════════════════════════════════════════ */
+async function testOfflineVault() {
+  try {
+    // 1. Apne Godown (Database) ka naam set karna
+    localforage.config({
+      name: 'OSSC_Smart_App',
+      storeName: 'ai_data_vault'
+    });
+
+    console.log("🛠️ IndexedDB Server start ho raha hai...");
+
+    // 2. (Step 1.2) Dummy data save karna
+    let testData = "Hello OSSC! Guru aur Student ka Offline Godown ekdum ready hai!";
+    await localforage.setItem('secret_message', testData);
+    console.log("✅ Step 1.2: Data IndexedDB mein successfully SAVE ho gaya!");
+
+    // 3. (Step 1.3) Data wapas nikal kar print karna (Check karne ke liye)
+    let retrievedData = await localforage.getItem('secret_message');
+    console.log("✅ Step 1.3: Godown se nikala hua data hai ➔", retrievedData);
+    
+  } catch (error) {
+    console.error("❌ IndexedDB Error:", error);
+  }
+}
+
+// App start hote hi is test ko run karna
+testOfflineVault();
+
+
+
+/* ══════════════════════════════════════════
+   START APPLICATION
+══════════════════════════════════════════ */
+setupApp();
+setTimeout(() => {
+  initDashboard();
+}, 1000);
+
+/* ══════════════════════════════════════════
+   🔍 STAGE 5: THE ULTIMATE ZOOM MODAL (ALL 4 CARDS)
+══════════════════════════════════════════ */
+let zoomChartInstance = null;
+
+function openZoom(cardType) {
+  const overlay = document.getElementById('zoomModalOverlay');
+  const ctx = document.getElementById('zoomCanvas').getContext('2d');
+  const titleEl = document.getElementById('zoomModalTitle');
+  const legendContainer = document.getElementById('zoomLegendContainer');
+  const canvasContainer = document.getElementById('zoomCanvas').parentElement;
+
+  if (zoomChartInstance !== null) {
+    zoomChartInstance.destroy();
+  }
+  legendContainer.innerHTML = ''; 
+
+  if (cardType === 'table') {
+    canvasContainer.style.display = 'none';
+    legendContainer.style.flex = 'none';
+    legendContainer.style.width = '100%';
+    legendContainer.style.padding = '0';
+  } else {
+    canvasContainer.style.display = 'block';
+    legendContainer.style.flex = '1';
+    legendContainer.style.paddingLeft = '5px';
+    legendContainer.style.paddingRight = '10px';
+  }
+
+  const allData = window.fullCategoryData || [];
+  const labels = allData.map(c => c.name);
+  const dataCounts = allData.map(c => c.count);
+  const baseColors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#2e59d9', '#17a673', '#2c9faf', '#e83e8c', '#fd7e14'];
+  const colors = labels.map((_, i) => baseColors[i % baseColors.length]);
+  const totalQuestions = dataCounts.reduce((sum, val) => sum + val, 0);
+
+if (cardType === 'table') {
+    titleEl.innerText = "🗓️ Chapter-wise Year Distribution";
+    
+    const questions = window.rawQuestions || [];
+    const yearSet = new Set();
+    const chapterYearCounts = {};
+    
+    questions.forEach(q => {
+      const cat = q.cat || "Miscellaneous";
+      const year = q.paper || "Unknown";
+      yearSet.add(year);
+      
+      if (!chapterYearCounts[cat]) chapterYearCounts[cat] = {};
+      chapterYearCounts[cat][year] = (chapterYearCounts[cat][year] || 0) + 1;
+    });
+    
+    const years = Array.from(yearSet).sort(); 
+    
+    // 🌟 NAYA: Column totals track karne ke liye variables
+    let yearTotals = {};
+    years.forEach(y => yearTotals[y] = 0);
+    let grandTotal = 0;
+    
+    // Table HTML Generate karna (Sath mein thead ko sticky top kiya)
+    let tableHtml = `
+      <div style="overflow-x: auto; overflow-y: auto; max-height: 55vh; width: 100%; border-radius: 8px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse; font-family: 'Nunito', sans-serif; text-align: center; white-space: nowrap;">
+          <thead style="position: sticky; top: 0; z-index: 10;">
+            <tr>
+              <th style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); text-align: left; position: sticky; left: 0; background: var(--blue); color: #ffffff; z-index: 12; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">CHAPTER NAME</th>
+              ${years.map(y => `<th style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); background: var(--blue); color: #ffffff; font-weight: 800; font-size: 1.05rem;">${y}</th>`).join('')}
+              <th style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); background: var(--navy); color: #ffffff; font-weight: 900; letter-spacing: 1px; font-size: 1.05rem;">TOTAL</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+    
+    labels.forEach((chapter, index) => {
+       const rowBg = index % 2 === 0 ? 'var(--bg)' : 'transparent';
+       const total = dataCounts[index];
+       grandTotal += total; // 🌟 NAYA: Har row ka total Grand Total mein jod rahe hain
+       
+       tableHtml += `
+         <tr style="background: ${rowBg}; border-bottom: 1px solid var(--border); transition: background 0.2s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='${rowBg}'">
+           <td style="padding: 10px; border: 1px solid var(--border); text-align: left; font-weight: bold; color: var(--text); position: sticky; left: 0; background: ${rowBg}; z-index: 1;">${chapter}</td>
+           ${years.map(y => {
+             const count = chapterYearCounts[chapter] && chapterYearCounts[chapter][y] ? chapterYearCounts[chapter][y] : '-';
+             if (count !== '-') yearTotals[y] += count; // 🌟 NAYA: Har year wale column ka total jod rahe hain
+             return `<td style="padding: 10px; border: 1px solid var(--border); color: ${count === '-' ? 'var(--muted)' : 'var(--blue)'}; font-weight: ${count === '-' ? 'normal' : '800'};">${count}</td>`;
+           }).join('')}
+           <td style="padding: 10px; border: 1px solid var(--border); font-weight: bold; color: var(--red);">${total}</td>
+         </tr>
+       `;
+    });
+    
+    // 🌟 NAYA: TFOOT (Table Footer) for Bottom Totals
+    tableHtml += `
+          </tbody>
+          <tfoot style="position: sticky; bottom: -1px; z-index: 10; background: var(--navy); color: #ffffff; box-shadow: 0 -4px 10px rgba(0,0,0,0.15);">
+            <tr>
+              <td style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); text-align: left; font-weight: 900; position: sticky; left: 0; background: var(--navy); z-index: 11; text-transform: uppercase; letter-spacing: 1px;">GRAND TOTAL</td>
+              ${years.map(y => `<td style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); font-weight: 900; color: #ffd700; font-size: 1.15rem;">${yearTotals[y]}</td>`).join('')}
+              <td style="padding: 14px 12px; border: 1px solid rgba(255,255,255,0.25); font-weight: 900; color: #ff4757; font-size: 1.25rem;">${grandTotal}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    `;
+    legendContainer.innerHTML = tableHtml;
+
+  } else if (cardType === 'weightage') {
+    titleEl.innerText = "📊 All Chapters Weightage";
+    let legendHTML = '';
+    labels.forEach((label, index) => {
+      legendHTML += `
+        <div id="zoom-legend-${index}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; transition: all 0.3s ease; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem;">
+            <span style="width: 14px; height: 14px; background: ${colors[index]}; border-radius: 4px;"></span> ${label}
+          </div>
+          <span style="font-weight: 800; color: ${colors[index]}; background: var(--card); padding: 2px 8px; border-radius: 4px;">${dataCounts[index]} Qs</span>
+        </div>`;
+    });
+    legendContainer.innerHTML = legendHTML;
+
+    zoomChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ data: dataCounts, backgroundColor: [...colors], borderRadius: 6, hoverBackgroundColor: colors }] },
+      plugins: [barNumberPlugin],
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' },
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ` 🔥 ${context.raw} Questions`; } } } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } }, x: { display: false } },
+        onHover: handleGraphToListHover
+      }
+    });
+
+  } else if (cardType === 'vip') {
+    titleEl.innerText = "📈 Important Chapters (Detailed Percentage View)";
+    let legendHTML = '';
+    labels.forEach((label, index) => {
+      const pct = Math.round((dataCounts[index] / totalQuestions) * 100) + "%";
+      legendHTML += `
+        <div id="zoom-legend-${index}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; transition: all 0.3s ease; cursor: pointer;">
+          <div style="display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            <span style="width: 14px; height: 14px; background: ${colors[index]}; border-radius: 50%; flex-shrink: 0;"></span> ${label}
+          </div>
+          <span style="font-weight: 800; color: ${colors[index]}; background: var(--card); padding: 2px 8px; border-radius: 4px; flex-shrink: 0;">${pct} (${dataCounts[index]}Q)</span>
+        </div>`;
+    });
+    legendContainer.innerHTML = legendHTML;
+
+    zoomChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: { labels: labels, datasets: [{ data: dataCounts, backgroundColor: [...colors], borderWidth: 2, hoverOffset: 6 }] },
+      options: {
+        responsive: true, maintainAspectRatio: false, animation: { duration: 1000, easing: 'easeOutQuart' },
+        plugins: {
+          legend: { display: true, position: 'right', labels: { font: { family: "'Nunito', sans-serif", size: 11 }, boxWidth: 12 } },
+          tooltip: { callbacks: { label: function(context) { let val = context.raw || 0; let pct = Math.round((val / totalQuestions) * 100) + "%"; return ` ${context.label}: ${val} Qs (${pct})`; } } }
+        },
+        onHover: handleGraphToListHover
+      }
+    });
+
+  } else if (cardType === 'type') {
+    titleEl.innerText = "🎯 Chapter-wise Type Analysis";
+    const chapterTypeData = window.chapterTypeCounts || {};
+    const chaptersWithTypes = Object.keys(chapterTypeData);
+
+    if (chaptersWithTypes.length === 0) {
+      legendContainer.innerHTML = "<p style='color:var(--red); font-weight:bold; text-align:center; margin-top:20px;'>No Type-wise data available.</p>";
+      overlay.classList.add('active');
+      return;
+    }
+
+    const typeBaseColors = ['#e74a3b', '#f6c23e', '#1cc88a', '#4e73df', '#36b9cc', '#858796', '#fd7e14', '#e83e8c'];
+
+    function drawTypePie(chapterName) {
+      const typesObj = chapterTypeData[chapterName];
+      const sortedTypes = Object.entries(typesObj).sort((a, b) => b[1] - a[1]);
+      const tLabels = sortedTypes.map(t => t[0]); 
+      const tData = sortedTypes.map(t => t[1]);   
+      const totalQ = tData.reduce((sum, val) => sum + val, 0);
+      const tColors = tLabels.map((_, i) => typeBaseColors[i % typeBaseColors.length]);
+
+      if (zoomChartInstance !== null) zoomChartInstance.destroy();
+
+      zoomChartInstance = new Chart(ctx, {
+        type: 'pie', 
+        data: { labels: tLabels, datasets: [{ data: tData, backgroundColor: tColors, borderColor: '#1e1e2f', borderWidth: 2, hoverOffset: 15 }] },
+        plugins: [pieLabelPlugin], 
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: { duration: 800, easing: 'easeOutElastic' },
+          plugins: { 
+            legend: { position: 'right', labels: { font: { family: "'Nunito', sans-serif", size: 13 } } }, 
+            tooltip: { callbacks: { label: function(context) { let val = context.raw || 0; let pct = Math.round((val / totalQ) * 100) + "%"; return ` ${context.label}: ${val} Qs (${pct})`; } } } 
+          }
+        }
+      });
+    }
+
+    let legendHTML = '';
+    chaptersWithTypes.forEach((chapter, index) => {
+      const totalChapterTypesQ = Object.values(chapterTypeData[chapter]).reduce((a,b)=>a+b, 0);
+      legendHTML += `
+        <div id="zoom-legend-type-${index}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Nunito', sans-serif; transition: all 0.3s ease; cursor: pointer;">
+          <div style="font-weight: 700; font-size: 0.95rem;">📘 ${chapter}</div>
+          <span style="font-weight: 800; color: var(--blue); background: var(--card); padding: 2px 8px; border-radius: 4px;">${totalChapterTypesQ} Qs</span>
+        </div>`;
+    });
+    legendContainer.innerHTML = legendHTML;
+
+    drawTypePie(chaptersWithTypes[0]);
+    document.getElementById(`zoom-legend-type-0`).style.border = "2px solid var(--blue)";
+    document.getElementById(`zoom-legend-type-0`).style.transform = "scale(1.04)";
+
+    chaptersWithTypes.forEach((chapter, index) => {
+      const legendItem = document.getElementById(`zoom-legend-type-${index}`);
+      if(legendItem) {
+        legendItem.addEventListener('mouseenter', () => {
+          chaptersWithTypes.forEach((_, i) => {
+            const el = document.getElementById(`zoom-legend-type-${i}`);
+            if(el) { el.style.border = "1px solid var(--border)"; el.style.transform = "scale(1)"; el.style.boxShadow = "none"; }
+          });
+          legendItem.style.border = "2px solid var(--blue)";
+          legendItem.style.transform = "scale(1.04)";
+          legendItem.style.boxShadow = "0 6px 15px rgba(26, 111, 175, 0.2)";
+          drawTypePie(chapter);
+        });
+      }
+    });
+  }
+
+  if (cardType === 'weightage' || cardType === 'vip') {
+    labels.forEach((label, index) => {
+      const legendItem = document.getElementById(`zoom-legend-${index}`);
+      if(legendItem) {
+        legendItem.addEventListener('mouseenter', () => {
+          const fadedColors = colors.map((c, i) => i === index ? c : c + '33'); 
+          zoomChartInstance.data.datasets[0].backgroundColor = fadedColors;
+          zoomChartInstance.update();
+          legendItem.style.transform = 'scale(1.04)'; legendItem.style.boxShadow = `0 6px 15px ${colors[index]}40`; legendItem.style.border = `2px solid ${colors[index]}`;
+        });
+        legendItem.addEventListener('mouseleave', () => {
+          zoomChartInstance.data.datasets[0].backgroundColor = [...colors]; 
+          zoomChartInstance.update(); 
+          legendItem.style.transform = 'scale(1)'; legendItem.style.boxShadow = 'none'; legendItem.style.border = '1px solid var(--border)';
+        });
+      }
+    });
+  }
+
+  overlay.classList.add('active');
+
+  function handleGraphToListHover(event, chartElement) {
+    document.querySelectorAll('[id^="zoom-legend-"]').forEach(el => {
+      el.style.transform = 'scale(1)'; el.style.boxShadow = 'none'; el.style.border = '1px solid var(--border)';
+    });
+    if (chartElement && chartElement.length > 0) {
+      const index = chartElement[0].index;
+      const legendItem = document.getElementById(`zoom-legend-${index}`);
+      if (legendItem) {
+        legendItem.style.transform = 'scale(1.04)';
+        legendItem.style.boxShadow = `0 6px 15px ${colors[index]}40`; 
+        legendItem.style.border = `2px solid ${colors[index]}`;
+        legendItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  }
+}
+
+function closeZoomModal() {
+  const overlay = document.getElementById('zoomModalOverlay');
+  overlay.classList.remove('active');
+}
+</script>
+
+
+<!-- 🤖 2. PRIVATE SCRIPT (Naya AI Engine) -->
+<script type="module">
+  
+//<!-- ══════════════════════════════════════════
+   //🚀 STAGE 2, 3 & 4: AI BRAIN, VECTORS & DETECTIVE
+//══════════════════════════════════════════ -->
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+  env.allowLocalModels = false; 
+
+  const vectorDB = localforage.createInstance({ name: 'OSSC_Smart_App', storeName: 'question_vectors' });
+
+  // 🚀 MATH SHORTCUT: Cosine Similarity (Do vectors ke beech ka match % nikalna)
+  function calculateSimilarity(vecA, vecB) {
+    let dotProduct = 0, normA = 0, normB = 0;
+    for (let i = 0; i < vecA.length; i++) {
+      dotProduct += vecA[i] * vecB[i];
+      normA += vecA[i] * vecA[i];
+      normB += vecB[i] * vecB[i];
+    }
+    return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+  }
+
+  async function initializeAIEngine() {
+    console.log("🧠 AI Engine Start ho raha hai...");
+    try {
+      const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+      
+      let newVectorsGenerated = 0;
+      for (let i = 0; i < allQuestions.length; i++) {
+        let q = allQuestions[i];
+        let existingVector = await vectorDB.getItem(`vec_${q.id}`);
+        if (!existingVector) {
+          let textToAnalyze = `Question: ${q.q} Options: ${q.opts.join(', ')}`;
+          let output = await extractor(textToAnalyze, { pooling: 'mean', normalize: true });
+          await vectorDB.setItem(`vec_${q.id}`, Array.from(output.data));
+          newVectorsGenerated++;
+        }
+      }
+
+      if (newVectorsGenerated > 0) {
+        console.log(`✅ Stage 3: ${newVectorsGenerated} naye questions ke Vectors SAVE ho gaye!`);
+      } else {
+        console.log(`⚡ Stage 3: Saare vectors IndexedDB se turant LOAD ho gaye! (Offline)`);
+      }
+
+      // 🕵️‍♂️ STAGE 4 TEST: THE DETECTIVE IN ACTION
+      console.log("\n==================================");
+      console.log("🕵️‍♂️ STAGE 4: AI DETECTIVE TEST CHALU HAI...");
+      
+      // Hum AI se ek custom sawal puchenge
+      let testQuery = "What is the brain of the computer?";
+      console.log(`❓ Humara Sawal: "${testQuery}"`);
+
+      // 1. Sawal ko Vector mein badlo
+      let queryOutput = await extractor(testQuery, { pooling: 'mean', normalize: true });
+      let queryVector = Array.from(queryOutput.data);
+
+      let bestMatch = null;
+      let highestScore = -1;
+
+      // 2. Godown ke saare questions se match karo
+      for (let i = 0; i < allQuestions.length; i++) {
+        let qVector = await vectorDB.getItem(`vec_${allQuestions[i].id}`);
+        if (qVector) {
+          let score = calculateSimilarity(queryVector, qVector);
+          if (score > highestScore) {
+            highestScore = score;
+            bestMatch = allQuestions[i];
+          }
+        }
+      }
+
+      // 3. Result dikhao
+      console.log(`🎯 AI ko sabse milta-julta sawal mil gaya! (Match: ${(highestScore * 100).toFixed(2)}%)`);
+      console.log(`📝 App ka Question: ${bestMatch.q}`);
+      console.log("==================================\n");
+
+    } catch (error) {
+      console.error("❌ AI Processing Error:", error);
+    }
+  }
+
+  setTimeout(() => { initializeAIEngine(); }, 2000);
+
+// 🌟 GLOBAL VARIABLE: Table se test shuru karne ke liye data store karega
+  window.pendingAITestData = [];
+
+  // 🚀 STAGE 5 UPGRADED: SMART CLUSTERING, SORTING & UI (BUG FIXED)
+  window.findRepeatedQuestions = async function() {
+    
+    const aiBtn = document.querySelector('button[onclick="window.findRepeatedQuestions()"]');
+    const originalBtnText = aiBtn ? aiBtn.innerHTML : "🤖 AI Smart PYQs (Repeated)";
+    if (aiBtn) aiBtn.innerHTML = "⏳ AI Scanning... Please wait";
+    
+    let totalQuestions = allQuestions.length;
+    let vectorCache = [];
+    
+    // 1. Load Vectors Fast
+    for(let i = 0; i < totalQuestions; i++) {
+       let vec = await vectorDB.getItem(`vec_${allQuestions[i].id}`);
+       if (vec) vectorCache.push({ question: allQuestions[i], vec: vec });
+    }
+
+    // 2. 🧠 SMART CLUSTERING
+    let clusters = [];
+    for(let i = 0; i < vectorCache.length; i++) {
+      for(let j = i + 1; j < vectorCache.length; j++) {
+         let score = calculateSimilarity(vectorCache[i].vec, vectorCache[j].vec);
+         if(score >= 0.85) { 
+            let q1 = vectorCache[i].question;
+            let q2 = vectorCache[j].question;
+            let existingCluster = clusters.find(c => c.includes(q1) || c.includes(q2));
+            if (existingCluster) {
+                if (!existingCluster.includes(q1)) existingCluster.push(q1);
+                if (!existingCluster.includes(q2)) existingCluster.push(q2);
+            } else {
+                clusters.push([q1, q2]);
+            }
+         }
+      }
+    }
+
+    // 3. 🎨 MASTER QUESTION & TABLE DATA PREPARATION
+    let finalTestQuestions = [];
+    
+    clusters.forEach(group => {
+        let masterQ = JSON.parse(JSON.stringify(group[0]));
+        masterQ.originalQ = masterQ.q; 
+        
+        let uniquePapers = [...new Set(group.map(q => q.paper || "PYQ"))];
+        let allYears = uniquePapers.join(", ");
+        masterQ.matchedYearsStr = allYears; 
+        
+        let repeatCount = group.length;
+        masterQ.repeatCount = repeatCount; 
+        
+        let stylingTag = `<div style="background: #ffd700; color: #000; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 13px; margin-bottom: 10px; display: inline-block;">
+            🔥 Repeated ${repeatCount} Times | Matching: ${allYears}
+        </div><br>`;
+        
+        masterQ.q = stylingTag + masterQ.q;
+        finalTestQuestions.push(masterQ);
+    });
+
+    // 🌟 BUG FIX 1: DOUBLE SORTING LOGIC (Pehle Repeats, Phir Chapter)
+    finalTestQuestions.sort((a, b) => {
+         // Agar repeat count alag hai, toh Highest wale ko upar rakho (Descending)
+         if (b.repeatCount !== a.repeatCount) {
+             return b.repeatCount - a.repeatCount;
+         }
+         // Agar repeat count same hai (Jaise dono 2-2 baar aaye hain), toh Chapter ke naam se A-Z lagao
+         let chapA = a.cat || "Z_Other";
+         let chapB = b.cat || "Z_Other";
+         return chapA.localeCompare(chapB);
+    });
+
+    // 4. 🚀 THE ZOOM MODAL TABLE
+    if(finalTestQuestions.length > 0) {
+       window.pendingAITestData = finalTestQuestions;
+       
+       let totalRepeatedQs = clusters.reduce((sum, group) => sum + group.length, 0);
+       let totalGroups = clusters.length;
+
+       const overlay = document.getElementById('zoomModalOverlay');
+       const titleEl = document.getElementById('zoomModalTitle');
+       const legendContainer = document.getElementById('zoomLegendContainer');
+       const canvasContainer = document.getElementById('zoomCanvas').parentElement;
+
+       titleEl.innerHTML = `🤖 AI Smart PYQs: Found <span style="color:var(--accent)">${totalRepeatedQs}</span> Repeated Questions in <span style="color:var(--blue)">${totalGroups}</span> Groups`;
+       
+       canvasContainer.style.display = 'none';
+       legendContainer.style.flex = 'none';
+       legendContainer.style.width = '100%';
+       legendContainer.style.padding = '0';
+       
+       // 🌟 BUG FIX 2: overflow-x: hidden aur Table Width set kardi taaki Scrollbar na aaye
+       legendContainer.style.overflowX = 'hidden'; 
+
+       let tableHtml = `
+         <div style="overflow-y: auto; overflow-x: hidden; max-height: 50vh; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px;">
+           <table style="width: 100%; border-collapse: collapse; font-family: 'Nunito', sans-serif; text-align: left; table-layout: auto;">
+             <thead style="position: sticky; top: 0; z-index: 10;">
+               <tr style="background: var(--navy); color: #ffffff; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px;">
+                 <th style="padding: 14px; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 15%;">Chapter Name</th>
+                 <th style="padding: 14px; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 45%;">Question</th>
+                 <th style="padding: 14px; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; width: 15%;">Correct Answer</th>
+                 <th style="padding: 14px; border: 1px solid rgba(255,255,255,0.2); text-align: center; color: #ffffff; width: 10%;">Repeats</th>
+                 <th style="padding: 14px; border: 1px solid rgba(255,255,255,0.2); text-align: center; color: #ffffff; width: 15%;">Years / Exams</th>
+               </tr>
+             </thead>
+             <tbody>
+       `;
+
+       finalTestQuestions.forEach((q, index) => {
+          const rowBg = index % 2 === 0 ? 'var(--bg)' : 'transparent';
+          const correctAns = q.opts[q.ans];
+          
+          tableHtml += `
+            <tr style="background: ${rowBg}; border-bottom: 1px solid var(--border); transition: background 0.2s;" onmouseover="this.style.background='var(--border)'" onmouseout="this.style.background='${rowBg}'">
+              <td style="padding: 12px; font-weight: 800; color: var(--text); font-size: 0.85rem;">${q.cat || "Mixed"}</td>
+              <td style="padding: 12px; font-weight: 600; color: var(--text); font-size: 0.95rem;">${q.originalQ}</td>
+              <td style="padding: 12px; font-weight: 800; color: var(--green); font-size: 0.9rem;">${correctAns}</td>
+              <td style="padding: 12px; text-align: center; font-weight: 900; color: var(--accent); font-size: 1rem;">🔥 ${q.repeatCount}</td>
+              <td style="padding: 12px; text-align: center; color: var(--text); font-weight: bold; font-size: 0.85rem;">
+                 <div style="background: var(--card); padding: 6px; border-radius: 6px; border: 1px solid var(--accent); color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.1);">${q.matchedYearsStr}</div>
+              </td>
+            </tr>
+          `;
+       });
+
+       tableHtml += `</tbody></table></div>`;
+       
+       // 🌟 FIX: Padding add ki taaki Button scale hone par bahar na nikle
+       tableHtml += `
+          <div style="text-align: right; padding: 10px 5px;">
+             <button onclick="launchAITestFromModal()" style="background: linear-gradient(135deg, var(--blue), var(--blue2)); color: #fff; border: none; padding: 14px 35px; font-size: 1.15rem; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 6px 15px rgba(26,111,175,0.4); transition: transform 0.3s, box-shadow 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                🤖 AI Repeat Questions Practice 🚀
+             </button>
+          </div>
+       `;
+
+       legendContainer.innerHTML = tableHtml;
+       overlay.classList.add('active');
+
+    } else {
+       alert("✅ Is question bank mein koi repeat nahi hai!");
+    }
+    
+    if(aiBtn) {
+        aiBtn.innerHTML = originalBtnText;
+    }
+  };
+
+  window.launchAITestFromModal = function() {
+      closeZoomModal(); 
+      window.startAITest(window.pendingAITestData); 
+  };
+
+  // 5. 🚀 TEST LAUNCH KARNA
+    if(finalTestQuestions.length > 0) {
+       alert(`🎉 Jadoo! AI ne ${finalTestQuestions.length} Unique Repeated Groups banaye hain! App Test ke liye tayyar hai.`);
+       
+       console.log("Mock Test Data Ready:", finalTestQuestions);
+       
+       // 👇 YAHAN SE HUMNE APNA AI BRIDGE CALL KIYA 👇
+       window.startAITest(finalTestQuestions);
+       
+    } else {
+       alert("✅ Is question bank mein koi repeat nahi hai!");
+    };
+
+</script>
+<!-- 🌟 STAGE 5: THE ZOOM MODAL (Advanced Janam Kundli View) 🌟 -->
+<div id="zoomModalOverlay" class="zoom-overlay" onclick="closeZoomModal()">
+  <div class="zoom-modal-content" style="max-width: 1200px; width: 95%;" onclick="event.stopPropagation()">
+    <button class="zoom-close-btn" onclick="closeZoomModal()">✖</button>
+    <h2 id="zoomModalTitle" style="font-family: 'Rajdhani', sans-serif; margin-bottom: 20px; color: var(--text); border-bottom: 2px dashed var(--border); padding-bottom: 10px;">Detailed View</h2>
+    
+    <!-- NAYA LAYOUT: Left mein Graph, Right mein List -->
+    <div style="display: flex; gap: 20px; height: 65vh; min-height: 450px; width: 100%;">
+      
+      <!-- Left Side: Bada Graph -->
+      <div style="flex: 2; position: relative; border-right: 2px dashed var(--border); padding-right: 15px;">
+        <canvas id="zoomCanvas"></canvas>
+      </div>
+      
+      <!-- Right Side: Chapter List (Scrollable) -->
+      <div id="zoomLegendContainer" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-left: 5px; padding-right: 10px;">
+        <!-- Yahan hamari list JavaScript se aayegi -->
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+</html>
