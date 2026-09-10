@@ -357,6 +357,232 @@
   color: white;
   transform: rotate(90deg); /* Close button par ghoomne wala effect */
 }
+/* ══════════════════════════════════════════
+         📱 OPERATION FULL RESPONSIVE (MOBILE & TABLET FIXES)
+      ══════════════════════════════════════════ */
+
+      /* ── 1. GLOBAL & HEADER TWEAKS ── */
+      @media (max-width: 768px) {
+        body { font-size: 14px; } /* Text thoda chota karenge taaki fit aaye */
+        
+        header { 
+          padding: 0 15px; 
+          height: auto; 
+          min-height: 60px; 
+          flex-wrap: wrap; 
+          justify-content: center; 
+          gap: 10px; 
+          padding-bottom: 10px;
+        }
+        
+        .header-logo { font-size: 1.2rem; text-align: center; width: 100%; margin-top: 10px; }
+        .header-controls { width: 100%; justify-content: center; }
+        .header-timer { font-size: 0.95rem; padding: 4px 8px; }
+        .theme-toggle-btn { font-size: 0.85rem; padding: 4px 10px; }
+      }
+
+/* ── 2. DASHBOARD CARDS & GRIDS (BUG FIXED) ── */
+      @media (max-width: 950px) {
+        /* 🌟 MAGIC FIX: !important lagane se JS isko hara nahi payega */
+        .dash-grid { grid-template-columns: repeat(2, 1fr) !important; }
+        .dashboard-header h1 { font-size: 2rem !important; }
+        .dashboard-header p { font-size: 1rem !important; }
+      }
+
+      @media (max-width: 600px) {
+        /* 🌟 MAGIC FIX: Mobile par hamesha 1 column rahega */
+        .dash-grid { grid-template-columns: 1fr !important; } 
+        .dash-card { padding: 15px; }
+        .chart-wrapper { height: 220px; } 
+        
+        /* Dashboard Filters */
+        .dashboard-header > div { flex-direction: column; width: 100%; }
+        #dashboardExamFilter, #dashboardYearFilter { width: 100%; font-size: 14px; }
+        
+        /* Syllabus Tracker Card Mobile Fix */
+        .dashboard-header + div { flex-direction: column; text-align: center; padding: 15px !important; }
+        .dashboard-header + div > div { width: 100%; align-items: center; justify-content: center; }
+        .dashboard-header + div > div:nth-child(2) { flex-direction: column; width: 100%; }
+        .dashboard-header + div > div:nth-child(2) > div, 
+        .dashboard-header + div > div:nth-child(2) > button { width: 100%; text-align: center; }
+      }
+
+      /* ── 3. THE MOCK TEST ARENA (SIDEBAR + QUESTION AREA) ── */
+      @media (max-width: 950px) {
+        /* Sidebar ab side mein nahi, upar ya niche stack hoga */
+        .scoreboard {
+          width: 100%; 
+          height: auto; 
+          max-height: none; 
+          position: relative; 
+          top: 0; 
+          flex-direction: row; 
+          flex-wrap: wrap; 
+          overflow: visible; 
+          padding: 0;
+        }
+        
+        /* Sidebar ke boxes ab agal-bagal aayenge tablet par */
+        .scoreboard > div { flex: 1; min-width: 250px; }
+        
+        /* Question Card Tweaks */
+        .question-card { padding: 20px; }
+        .q-top { flex-direction: column; gap: 10px; align-items: flex-start; }
+        .options-grid { grid-template-columns: 1fr; } /* Options ek ke neeche ek aayenge */
+      }
+
+      @media (max-width: 600px) {
+        /* Mobile par Sidebar boxes bhi stack honge */
+        .scoreboard > div { min-width: 100%; }
+        .chapters-list { max-height: 180px; } /* List ki height choti */
+        .qnav-grid { grid-template-columns: repeat(6, 1fr); } /* Number pad adjust */
+        
+        .exam-bar { flex-direction: column; gap: 8px; text-align: center; }
+        .nav-bar { flex-direction: column; gap: 12px; }
+        .nav-btn { width: 100%; justify-content: center; }
+        
+        /* Result Screen Fixes */
+        .result-stats { flex-direction: column; width: 100%; }
+        .result-stat { width: 100%; }
+        .results-actions { flex-direction: column; width: 100%; }
+        .results-actions button { width: 100%; }
+      }
+
+/* ── 4. AI CHATBOT MOBILE FIX (STAGE 3) ── */
+      @media (max-width: 500px) {
+        .glass-chat-panel {
+          width: calc(100vw - 40px) !important; 
+          height: 60vh !important; 
+          right: 0 !important; 
+          left: auto !important; 
+          bottom: 85px !important; 
+        }
+        .glass-chat-panel.left-side {
+          right: 0 !important;
+          left: auto !important; 
+        }
+        /* 🌟 NAYA BUG FIX: Mobile par Full Screen input box ekdum zameen par chipkega */
+        .glass-chat-panel.fullscreen-mode {
+          position: fixed !important;
+          top: 0 !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100vw !important;
+          height: 100dvh !important;
+          border-radius: 0 !important;
+          transform: none !important;
+          margin: 0 !important;
+        }
+      }
+
+/* ── 5. VIP MODALS & MATRIX TABLE (STAGE 4 - BUG FIXED) ── */
+      @media (max-width: 950px) {
+        /* Deep AI Vault - Cards ek ke neeche ek aayenge */
+/* 🌟 BUG FIX: Cards ko dabne se rokne ke liye height 'auto' aur alignment 'flex-start' kiya */
+        #aiCardSelectionView { 
+          flex-direction: column !important; 
+          height: auto !important; 
+          justify-content: flex-start !important; 
+          gap: 20px !important; 
+          padding: 10px 0 30px 0 !important; 
+        }
+
+        /* 🌟 BUG FIX: Syllabus Tracker Mobile View 🌟 */
+        #syllabusModalOverlay .deep-ai-container > div:last-child {
+          flex-direction: column !important; 
+          overflow: hidden !important; /* Main scroll band, andar boxes scroll honge */
+        }
+        
+        /* Left Side (Chapters List) */
+        #syllabusModalOverlay .deep-ai-container > div:last-child > div:first-child {
+          width: 100% !important; 
+          height: 35% !important; /* Upar ka 35% hissa lega */
+          border-right: none !important;
+          border-bottom: 2px solid var(--blue) !important;
+          flex: none !important;
+        }
+        #sylChapterList { 
+          max-height: none !important; 
+          height: 100% !important; 
+        }
+
+        /* Right Side (Types/Topics List) */
+        #syllabusModalOverlay .deep-ai-container > div:last-child > div:last-child {
+          width: 100% !important; 
+          height: 65% !important; /* Neeche ka 65% hissa lega */
+          flex: none !important;
+        }
+        #sylTopicList {
+          flex: 1 !important;
+          height: auto !important;
+          padding-bottom: 40px !important; /* Mobile scroll ke liye safety padding */
+        }
+
+        /* Zoom Modal - Graph Upar, List Neeche */
+        #zoomModalBodyLayout { flex-direction: column !important; height: auto !important; max-height: 75vh; overflow-y: auto; }
+        #zoomCanvasContainer { flex: none !important; border-right: none !important; border-bottom: 2px dashed var(--border); padding-bottom: 15px; margin-bottom: 15px; height: 280px; width: 100%; }
+        #zoomLegendContainer { padding-left: 0 !important; }
+      }
+
+      /* ── 6. MICRO-ADJUSTMENTS FOR VERY SMALL SCREENS ── */
+      @media (max-width: 600px) {
+         /* Table ka text chhota karenge taaki mobile par scroll aasan ho */
+         .ai-excel-table th, .ai-excel-table td { padding: 10px 8px !important; font-size: 0.8rem !important; }
+         
+         /* Modals ki headers aur buttons mobile par adjust */
+         .deep-ai-header h2 { font-size: 1.2rem !important; }
+         .ai-proof-card { padding: 15px !important; }
+      }
+
+    /* ── 7. LANDSCAPE (ROTATE) FIX FOR AI CHATBOT (BUG 2 FIXED 100%) ── */
+      @media (max-height: 500px) and (orientation: landscape) {
+        .glass-chat-panel {
+          /* 🌟 MAIN FIX: Height ko fix aur chhota kar diya taaki header screen se bahar na bhage */
+          height: 260px !important; 
+          width: 320px !important; 
+          bottom: 80px !important; 
+          top: auto !important;
+        }
+        .glass-chat-panel.fullscreen-mode {
+          /* Fullscreen hone par poori screen cover karega */
+          position: fixed !important;
+          height: 100vh !important;
+          width: 100vw !important;
+          bottom: 0 !important;
+          right: 0 !important;
+          left: 0 !important;
+          border-radius: 0 !important;
+          z-index: 9999999 !important;
+        }
+        .chat-header {
+          padding: 6px 12px !important; 
+          font-size: 1rem !important;
+        }
+        .chat-history {
+          padding: 8px !important;
+        }
+        .chat-input-area {
+          padding: 6px !important; 
+        }
+      }
+
+      /* 🚀 THE ULTIMATE FULLSCREEN FIX FOR MOBILE 🚀 */
+      @media (max-width: 768px) {
+        .glass-chat-panel.fullscreen-mode {
+          position: fixed !important;
+          top: 0 !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          width: 100vw !important;
+          height: 100dvh !important; /* 'dvh' Chrome mobile ke address bar gap ko fix karta hai */
+          max-height: 100dvh !important;
+          margin: 0 !important;
+          border-radius: 0 !important;
+          z-index: 9999999 !important;
+        }
+      }
 </style>
 </head>
 <body>
